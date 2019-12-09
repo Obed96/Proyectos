@@ -1,0 +1,164 @@
+MPLINK 4.45, Linker
+Linker Map File - Created Thu Dec 06 13:09:41 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000004
+                   .org_2       code   0x000004    program   0x0004ea
+                   .org_3       code   0x000400    program   0x000078
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000001      
+                            0x000004    0x000278      
+                            0x000400    0x00043b      
+            691 out of 8454 program addresses used, program memory utilization is 8%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+               ACTIVOCAN1   0x000076    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN2   0x000080    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN3   0x00008a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN4   0x000094    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL1LIMPIO   0x0000c4    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL2LIMPIO   0x0000cf    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL3LIMPIO   0x0000da    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL4LIMPIO   0x0000e5    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                CLEAR_LCD   0x000260    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           COMMAND_DOUBLE   0x0001f7    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                CONVERTIR   0x0000ba    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              CURSOR_INIT   0x000264    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 Centenas   0x000184    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Cursor_Linea_1   0x000268    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Cursor_Linea_2   0x00026b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  DATALCD   0x000218    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  Decenas   0x00018b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               Envia_Dato   0x0001ef    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    FINAL   0x00026e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                Hex_Ascii   0x000180    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                   INICIO   0x000013    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 INIT_LCD   0x0001d2    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               INIT_PORTS   0x0001bf    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               INIT_RS232   0x00019a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_0   0x00009e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_1   0x0000a5    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_2   0x0000ac    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_3   0x0000b3    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                     LOOP   0x000014    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  LOOP_AD   0x0000c0    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Loop_Externo   0x00024b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+            Loop_Externo2   0x000254    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Loop_Externo_1   0x000256    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Loop_Interno   0x00024d    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Loop_Interno_1   0x000258    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             MENSAJEBIENV   0x000401    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+            MENSAJEBIENV2   0x00040a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU1   0x000410    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU2   0x00041b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU3   0x000426    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU4   0x000431    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  MOSTRAR   0x000100    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 MOSTRAR1   0x000120    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 MOSTRAR2   0x000140    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 MOSTRAR3   0x000160    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Main_Message   0x00001b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+          RX_Interrupcion   0x0001a9    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+            RetardoMicros   0x000246    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+          Retardo_1Decima   0x000253    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               Retardo_1s   0x000244    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+        Retardo_200micros   0x00023b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+         Retardo_20micros   0x00023e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Retardo_20ms   0x000240    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              Retardo_5ms   0x000242    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              Retardos_ms   0x00024a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              SET_MESSAGE   0x00026e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             SOLTAR_TECLA   0x00004f    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    TABLA   0x000400    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  TECLADO   0x000039    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                   TECLAS   0x00003d    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               TRANSMITIR   0x000196    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 Unidades   0x000192    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    VACIO   0x0000f0    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                     main   0x000010    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              micros_Loop   0x000247    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     main   0x000010    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                   INICIO   0x000013    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                     LOOP   0x000014    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Main_Message   0x00001b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  TECLADO   0x000039    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                   TECLAS   0x00003d    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             SOLTAR_TECLA   0x00004f    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN1   0x000076    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN2   0x000080    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN3   0x00008a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               ACTIVOCAN4   0x000094    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_0   0x00009e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_1   0x0000a5    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_2   0x0000ac    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             LEER_CANAL_3   0x0000b3    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                CONVERTIR   0x0000ba    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  LOOP_AD   0x0000c0    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL1LIMPIO   0x0000c4    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL2LIMPIO   0x0000cf    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL3LIMPIO   0x0000da    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             CANAL4LIMPIO   0x0000e5    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    VACIO   0x0000f0    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  MOSTRAR   0x000100    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 MOSTRAR1   0x000120    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 MOSTRAR2   0x000140    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 MOSTRAR3   0x000160    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                Hex_Ascii   0x000180    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 Centenas   0x000184    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  Decenas   0x00018b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 Unidades   0x000192    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               TRANSMITIR   0x000196    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               INIT_RS232   0x00019a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+          RX_Interrupcion   0x0001a9    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               INIT_PORTS   0x0001bf    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                 INIT_LCD   0x0001d2    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               Envia_Dato   0x0001ef    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           COMMAND_DOUBLE   0x0001f7    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                  DATALCD   0x000218    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+        Retardo_200micros   0x00023b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+         Retardo_20micros   0x00023e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Retardo_20ms   0x000240    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              Retardo_5ms   0x000242    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+               Retardo_1s   0x000244    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+            RetardoMicros   0x000246    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              micros_Loop   0x000247    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              Retardos_ms   0x00024a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Loop_Externo   0x00024b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             Loop_Interno   0x00024d    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+          Retardo_1Decima   0x000253    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+            Loop_Externo2   0x000254    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Loop_Externo_1   0x000256    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Loop_Interno_1   0x000258    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                CLEAR_LCD   0x000260    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              CURSOR_INIT   0x000264    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Cursor_Linea_1   0x000268    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+           Cursor_Linea_2   0x00026b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    FINAL   0x00026e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+              SET_MESSAGE   0x00026e    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    TABLA   0x000400    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+             MENSAJEBIENV   0x000401    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+            MENSAJEBIENV2   0x00040a    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU1   0x000410    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU2   0x00041b    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU3   0x000426    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+                    MENU4   0x000431    program     static C:\Users\Obed\Documents\obed\7mo semestre\sistemas programables\ProyectoFinal\practicafinal.ASM
+
+

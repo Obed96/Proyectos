@@ -1,0 +1,2441 @@
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[205]: Found directive in column 1. (List)
+                      00001 List p=16f877A ;list directive to define processor
+                      00002 #include <p16f877A.inc> ;processor specific variable definitions
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00566         LIST
+                      00003 ;***** VARIABLE DEFINITIONS*****
+Warning[205]: Found directive in column 1. (CBLOCK)
+                      00004 CBLOCK 0x20
+  00000020            00005 w_temp ;variable used for context saving
+  00000021            00006 status_temp ;variable used for context saving
+  00000022            00007 ConteoRetardo
+  00000023            00008 Conteo
+  00000024            00009 CONTEO_RETARDO
+  00000025            00010 DATA_8
+  00000026            00011 MOVE_CURSOR
+  00000027            00012 CUENTA_1
+  00000028            00013 CUENTA_2
+  00000029            00014 CUENTA_3
+  0000002A            00015 VAR
+  0000002B            00016 ASCII_H
+  0000002C            00017 ASCII_M
+  0000002D            00018 ASCII_L
+  0000002E            00019 HEXADECIMAL
+  0000002F            00020 TEMP
+  00000030            00021 KEY
+  00000031            00022 COLUMNA
+  00000032            00023 VAR_PORTC
+  00000033            00024 VAR_AUX
+  00000034            00025 rx_dato
+  00000035            00026 VALUE_ADC
+  00000036            00027 Hex_Asci
+  00000037            00028 canales
+  00000038            00029 DATO_RX
+Warning[205]: Found directive in column 1. (ENDC)
+                      00030 ENDC
+                      00031 ;******************************************************
+                      00032 #define RS PORTC, 3
+                      00033 #define RW PORTC, 4
+                      00034 #define E PORTC, 5
+                      00035 ;**************************************************************************
+                      00036 ;* Macros to select the register bank. Many bank changes can be optimised *
+                      00037 ;* when only one STATUS bit changes *
+                      00038 ;**************************************************************************
+                      00039 Bank0 MACRO ;macro to select data RAM bank 0
+                      00040 Bcf STATUS,RP0
+                      00041 Bcf STATUS,RP1
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[205]: Found directive in column 1. (ENDM)
+                      00042 ENDM
+                      00043 Bank1 MACRO ;macro to select data RAM bank 1
+                      00044 Bsf STATUS,RP0
+                      00045 Bcf STATUS,RP1
+Warning[205]: Found directive in column 1. (ENDM)
+                      00046 ENDM
+                      00047 Bank2 MACRO ;macro to select data RAM bank 2
+                      00048 Bcf STATUS,RP0
+                      00049 Bsf STATUS,RP1
+Warning[205]: Found directive in column 1. (ENDM)
+                      00050 ENDM
+                      00051 Bank3 MACRO ;macro to select data RAM bank 3
+                      00052 bsf STATUS,RP0
+                      00053 bsf STATUS,RP1
+Warning[205]: Found directive in column 1. (ENDM)
+                      00054 ENDM
+                      00055 ;**********************************************************************
+Warning[205]: Found directive in column 1. (ORG)
+0000                  00056 ORG 0x000 ;processor reset vector
+Warning[203]: Found opcode in column 1. (Clrf)
+0000   018A           00057 Clrf PCLATH ;ensure page bits are cleared
+Warning[203]: Found opcode in column 1. (goto)
+0001   2810           00058 goto main ;go to beginning of program
+Warning[205]: Found directive in column 1. (ORG)
+0004                  00059 ORG 0x004 ;interrupt vector location
+Warning[203]: Found opcode in column 1. (Movwf)
+0004   00A0           00060 Movwf w_temp ;save off current W register contents
+Warning[203]: Found opcode in column 1. (movf)
+0005   0803           00061 movf STATUS,w ;move status register into W register
+Warning[203]: Found opcode in column 1. (bcf)
+0006   1283           00062 bcf STATUS,RP0 ;ensure file register bank set to 0
+Warning[203]: Found opcode in column 1. (movwf)
+0007   00A1           00063 movwf status_temp ;save off contents of STATUS register
+                      00064 ;isr code can go here or be located as
+                      00065 ;--------------------------------------
+Warning[203]: Found opcode in column 1. (btfsc)
+0008   1A8C           00066 btfsc PIR1, RCIF ;Verifica si hay un dato en el buffer RX
+Warning[203]: Found opcode in column 1. (call)
+0009   21A9           00067 call RX_Interrupcion ;Brinca a la subrutina
+Warning[203]: Found opcode in column 1. (bcf)
+000A   1283           00068 bcf STATUS,RP0 ;ensure file register bank set to 0
+                      00069 ;================================================
+Warning[203]: Found opcode in column 1. (movf)
+000B   0821           00070 movf status_temp,w ;retrieve copy of STATUS register
+Warning[203]: Found opcode in column 1. (movwf)
+000C   0083           00071 movwf STATUS ;restore pre-isr STATUS register contents
+Warning[203]: Found opcode in column 1. (swapf)
+000D   0EA0           00072 swapf w_temp,f
+Warning[203]: Found opcode in column 1. (swapf)
+000E   0E20           00073 swapf w_temp,w ;restore pre-isr W register contents
+Warning[203]: Found opcode in column 1. (retfie)
+000F   0009           00074 retfie ;return from interrupt
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00075 
+                      00076 
+                      00077 
+                      00078 ;***********************************************************************
+                      00079 ; Código principal *
+                      00080 ;***********************************************************************
+0010                  00081 main ; remaining code goes here
+Warning[203]: Found opcode in column 1. (call)
+0010   21BF           00082 call INIT_PORTS ;Subrutina para inicializar los puertos
+Warning[203]: Found opcode in column 1. (call)
+0011   21D2           00083 call INIT_LCD ;Subrutina para inicializar el LCD
+Warning[203]: Found opcode in column 1. (call)
+0012   219A           00084 call INIT_RS232
+0013                  00085 INICIO
+Warning[203]: Found opcode in column 1. (call)
+0013   201B           00086 call Main_Message
+0014                  00087 LOOP
+Warning[203]: Found opcode in column 1. (call)
+0014   2039           00088 call TECLADO ;Rutina para leer el teclado
+Warning[203]: Found opcode in column 1. (call)
+0015   209E           00089 call LEER_CANAL_0
+Warning[203]: Found opcode in column 1. (call)
+0016   20A5           00090 call LEER_CANAL_1
+Warning[203]: Found opcode in column 1. (call)
+0017   20AC           00091 call LEER_CANAL_2
+Warning[203]: Found opcode in column 1. (call)
+0018   20B3           00092 call LEER_CANAL_3
+Warning[203]: Found opcode in column 1. (goto)
+0019   2814           00093 goto LOOP
+                      00094 
+                      00095 
+                      00096 
+                      00097     
+001A   0008           00098         return
+                      00099 
+                      00100 ;************************************************************************
+                      00101 ;mensaje inicio
+001B                  00102 Main_Message
+Warning[203]: Found opcode in column 1. (call)
+001B   2260           00103 call CLEAR_LCD
+Warning[203]: Found opcode in column 1. (movlw)
+Warning[202]: Argument out of range.  Least significant bits used.
+001C   3001           00104 movlw MENSAJEBIENV
+Warning[203]: Found opcode in column 1. (movwf)
+001D   00AA           00105 movwf VAR
+Warning[203]: Found opcode in column 1. (call)
+001E   226E           00106 call SET_MESSAGE
+Warning[203]: Found opcode in column 1. (movlw)
+001F   3005           00107 movlw .5
+Warning[203]: Found opcode in column 1. (call)
+0020   226B           00108 call Cursor_Linea_2
+Warning[203]: Found opcode in column 1. (movlw)
+Warning[202]: Argument out of range.  Least significant bits used.
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0021   300A           00109 movlw MENSAJEBIENV2
+Warning[203]: Found opcode in column 1. (movwf)
+0022   00AA           00110 movwf VAR
+Warning[203]: Found opcode in column 1. (call)
+0023   226E           00111 call SET_MESSAGE
+Warning[203]: Found opcode in column 1. (call)
+0024   2244           00112 call Retardo_1s
+Warning[203]: Found opcode in column 1. (call)
+0025   2260           00113 call CLEAR_LCD
+                      00114 
+Warning[203]: Found opcode in column 1. (movlw)
+Warning[202]: Argument out of range.  Least significant bits used.
+0026   3010           00115 movlw MENU1
+Warning[203]: Found opcode in column 1. (movwf)
+0027   00AA           00116 movwf VAR
+Warning[203]: Found opcode in column 1. (call)
+0028   226E           00117 call SET_MESSAGE
+Warning[203]: Found opcode in column 1. (call)
+0029   226B           00118 call Cursor_Linea_2
+Warning[203]: Found opcode in column 1. (movlw)
+Warning[202]: Argument out of range.  Least significant bits used.
+002A   301B           00119 movlw MENU2
+Warning[203]: Found opcode in column 1. (movwf)
+002B   00AA           00120 movwf VAR
+Warning[203]: Found opcode in column 1. (call)
+002C   226E           00121 call SET_MESSAGE
+Warning[203]: Found opcode in column 1. (call)
+002D   2244           00122 call Retardo_1s
+Warning[203]: Found opcode in column 1. (call)
+002E   2260           00123 call CLEAR_LCD
+                      00124 
+Warning[203]: Found opcode in column 1. (movlw)
+Warning[202]: Argument out of range.  Least significant bits used.
+002F   3026           00125 movlw MENU3
+Warning[203]: Found opcode in column 1. (movwf)
+0030   00AA           00126 movwf VAR
+Warning[203]: Found opcode in column 1. (call)
+0031   226E           00127 call SET_MESSAGE
+Warning[203]: Found opcode in column 1. (call)
+0032   226B           00128 call Cursor_Linea_2
+Warning[203]: Found opcode in column 1. (movlw)
+Warning[202]: Argument out of range.  Least significant bits used.
+0033   3031           00129 movlw MENU4
+Warning[203]: Found opcode in column 1. (movwf)
+0034   00AA           00130 movwf VAR
+Warning[203]: Found opcode in column 1. (call)
+0035   226E           00131 call SET_MESSAGE
+Warning[203]: Found opcode in column 1. (call)
+0036   2244           00132 call Retardo_1s
+Warning[203]: Found opcode in column 1. (call)
+0037   2260           00133 call CLEAR_LCD
+                      00134 
+Warning[203]: Found opcode in column 1. (return)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0038   0008           00135 return
+                      00136 
+                      00137 ;**********************************************************************************
+                      00138 ;*****************************************************************
+                      00139 ;* Rutina para leer el teclado y checa que el botón fue soltado *
+                      00140 ;*****************************************************************
+                      00141 
+0039                  00142 TECLADO
+Warning[203]: Found opcode in column 1. (clrf)
+0039   01B0           00143 clrf KEY
+Warning[203]: Found opcode in column 1. (movlw)
+003A   30FF           00144 movlw 0xFF
+Warning[203]: Found opcode in column 1. (movwf)
+003B   00B1           00145 movwf COLUMNA
+Warning[203]: Found opcode in column 1. (bcf)
+003C   1003           00146 bcf STATUS, C
+003D                  00147 TECLAS
+Warning[203]: Found opcode in column 1. (rrf)
+003D   0CB1           00148 rrf COLUMNA, F
+Warning[203]: Found opcode in column 1. (movf)
+003E   0831           00149 movf COLUMNA,W
+Warning[203]: Found opcode in column 1. (movwf)
+003F   0086           00150 movwf PORTB
+Warning[203]: Found opcode in column 1. (btfss)
+0040   1D86           00151 btfss PORTB, 3
+Warning[203]: Found opcode in column 1. (goto)
+0041   284F           00152 goto SOLTAR_TECLA
+Warning[203]: Found opcode in column 1. (incf)
+Message[305]: Using default destination of 1 (file).
+0042   0AB0           00153 incf KEY
+Warning[203]: Found opcode in column 1. (btfss)
+0043   1D06           00154 btfss PORTB, 2
+Warning[203]: Found opcode in column 1. (goto)
+0044   284F           00155 goto SOLTAR_TECLA
+Warning[203]: Found opcode in column 1. (incf)
+Message[305]: Using default destination of 1 (file).
+0045   0AB0           00156 incf KEY
+Warning[203]: Found opcode in column 1. (btfss)
+0046   1C86           00157 btfss PORTB, 1
+Warning[203]: Found opcode in column 1. (goto)
+0047   284F           00158 goto SOLTAR_TECLA
+Warning[203]: Found opcode in column 1. (incf)
+Message[305]: Using default destination of 1 (file).
+0048   0AB0           00159 incf KEY
+Warning[203]: Found opcode in column 1. (btfss)
+0049   1C06           00160 btfss PORTB, 0
+Warning[203]: Found opcode in column 1. (goto)
+004A   284F           00161 goto SOLTAR_TECLA
+Warning[203]: Found opcode in column 1. (btfss)
+004B   1E31           00162 btfss COLUMNA, 4
+Warning[203]: Found opcode in column 1. (return)
+004C   0008           00163 return
+Warning[203]: Found opcode in column 1. (incf)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[305]: Using default destination of 1 (file).
+004D   0AB0           00164 incf KEY
+Warning[203]: Found opcode in column 1. (goto)
+004E   283D           00165 goto TECLAS
+                      00166 
+004F                  00167 SOLTAR_TECLA
+Warning[203]: Found opcode in column 1. (btfss)
+004F   1D86           00168 btfss PORTB, 3
+Warning[203]: Found opcode in column 1. (goto)
+0050   284F           00169 goto $-1
+Warning[203]: Found opcode in column 1. (btfss)
+0051   1D06           00170 btfss PORTB, 2
+Warning[203]: Found opcode in column 1. (goto)
+0052   2851           00171 goto $-1
+Warning[203]: Found opcode in column 1. (btfss)
+0053   1C86           00172 btfss PORTB, 1
+Warning[203]: Found opcode in column 1. (goto)
+0054   2853           00173 goto $-1
+Warning[203]: Found opcode in column 1. (btfss)
+0055   1C06           00174 btfss PORTB, 0
+Warning[203]: Found opcode in column 1. (goto)
+0056   2855           00175 goto $-1
+                      00176 
+Warning[203]: Found opcode in column 1. (movf)
+0057   0830           00177 movf KEY,W
+Warning[203]: Found opcode in column 1. (bcf)
+0058   1103           00178 bcf STATUS,Z
+Warning[203]: Found opcode in column 1. (sublw)
+0059   3C00           00179 sublw 0x00
+Warning[203]: Found opcode in column 1. (btfss)
+005A   1D03           00180 btfss STATUS,Z
+Warning[203]: Found opcode in column 1. (goto)
+005B   285D           00181 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+005C   2876           00182 goto ACTIVOCAN1
+                      00183 
+                      00184 
+Warning[203]: Found opcode in column 1. (movf)
+005D   0830           00185 movf KEY,W
+Warning[203]: Found opcode in column 1. (bcf)
+005E   1103           00186 bcf STATUS,Z
+Warning[203]: Found opcode in column 1. (sublw)
+005F   3C01           00187 sublw 0x01
+Warning[203]: Found opcode in column 1. (btfss)
+0060   1D03           00188 btfss STATUS,Z
+Warning[203]: Found opcode in column 1. (goto)
+0061   2863           00189 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+0062   2880           00190 goto ACTIVOCAN2
+                      00191 
+Warning[203]: Found opcode in column 1. (movf)
+0063   0830           00192 movf KEY,W
+Warning[203]: Found opcode in column 1. (bcf)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0064   1103           00193 bcf STATUS,Z
+Warning[203]: Found opcode in column 1. (sublw)
+0065   3C02           00194 sublw 0x02
+Warning[203]: Found opcode in column 1. (btfss)
+0066   1D03           00195 btfss STATUS,Z
+Warning[203]: Found opcode in column 1. (goto)
+0067   2869           00196 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+0068   288A           00197 goto ACTIVOCAN3
+                      00198 
+Warning[203]: Found opcode in column 1. (movf)
+0069   0830           00199 movf KEY,W
+Warning[203]: Found opcode in column 1. (bcf)
+006A   1103           00200 bcf STATUS,Z
+Warning[203]: Found opcode in column 1. (sublw)
+006B   3C03           00201 sublw 0x03
+Warning[203]: Found opcode in column 1. (btfss)
+006C   1D03           00202 btfss STATUS,Z
+Warning[203]: Found opcode in column 1. (goto)
+006D   286F           00203 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+006E   2894           00204 goto ACTIVOCAN4
+                      00205 
+Warning[203]: Found opcode in column 1. (movf)
+006F   0830           00206 movf KEY,W
+Warning[203]: Found opcode in column 1. (bcf)
+0070   1103           00207 bcf STATUS,Z
+Warning[203]: Found opcode in column 1. (sublw)
+0071   3C04           00208 sublw 0x04
+Warning[203]: Found opcode in column 1. (btfss)
+0072   1D03           00209 btfss STATUS,Z
+Warning[203]: Found opcode in column 1. (goto)
+0073   2875           00210 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+0074   2813           00211 goto INICIO
+Warning[203]: Found opcode in column 1. (return)
+0075   0008           00212 return
+                      00213 
+                      00214 
+                      00215 ;Colocar la bandera para ver si el canal esta activo o no
+                      00216 
+0076                  00217 ACTIVOCAN1
+Warning[203]: Found opcode in column 1. (btfss)
+0076   1C37           00218 btfss canales,0
+Warning[203]: Found opcode in column 1. (goto)
+0077   287A           00219 goto $+3
+Warning[203]: Found opcode in column 1. (bcf)
+0078   1037           00220 bcf canales,0
+Warning[203]: Found opcode in column 1. (goto)
+0079   287B           00221 goto $+2
+Warning[203]: Found opcode in column 1. (bsf)
+007A   1437           00222 bsf canales,0
+Warning[203]: Found opcode in column 1. (movlw)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+007B   3050           00223 movlw 'P'
+Warning[203]: Found opcode in column 1. (call)
+007C   2196           00224 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+007D   3030           00225 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+007E   2196           00226 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (return)
+007F   0008           00227 return
+                      00228 
+0080                  00229 ACTIVOCAN2
+Warning[203]: Found opcode in column 1. (btfss)
+0080   1CB7           00230 btfss canales,1
+Warning[203]: Found opcode in column 1. (goto)
+0081   2884           00231 goto $+3
+Warning[203]: Found opcode in column 1. (bcf)
+0082   10B7           00232 bcf canales,1
+Warning[203]: Found opcode in column 1. (goto)
+0083   2885           00233 goto $+2
+Warning[203]: Found opcode in column 1. (bsf)
+0084   14B7           00234 bsf canales,1
+Warning[203]: Found opcode in column 1. (movlw)
+0085   3050           00235 movlw 'P'
+Warning[203]: Found opcode in column 1. (call)
+0086   2196           00236 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+0087   3031           00237 movlw '1'
+Warning[203]: Found opcode in column 1. (call)
+0088   2196           00238 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (return)
+0089   0008           00239 return
+                      00240 
+008A                  00241 ACTIVOCAN3
+Warning[203]: Found opcode in column 1. (btfss)
+008A   1D37           00242 btfss canales,2
+Warning[203]: Found opcode in column 1. (goto)
+008B   288E           00243 goto $+3
+Warning[203]: Found opcode in column 1. (bcf)
+008C   1137           00244 bcf canales,2
+Warning[203]: Found opcode in column 1. (goto)
+008D   288F           00245 goto $+2
+Warning[203]: Found opcode in column 1. (bsf)
+008E   1537           00246 bsf canales,2
+Warning[203]: Found opcode in column 1. (movlw)
+008F   3050           00247 movlw 'P'
+Warning[203]: Found opcode in column 1. (call)
+0090   2196           00248 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+0091   3032           00249 movlw '2'
+Warning[203]: Found opcode in column 1. (call)
+0092   2196           00250 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (return)
+0093   0008           00251 return
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00252 
+0094                  00253 ACTIVOCAN4
+Warning[203]: Found opcode in column 1. (btfss)
+0094   1DB7           00254 btfss canales,3
+Warning[203]: Found opcode in column 1. (goto)
+0095   2898           00255 goto $+3
+Warning[203]: Found opcode in column 1. (bcf)
+0096   11B7           00256 bcf canales,3
+Warning[203]: Found opcode in column 1. (goto)
+0097   2899           00257 goto $+2
+Warning[203]: Found opcode in column 1. (bsf)
+0098   15B7           00258 bsf canales,3
+Warning[203]: Found opcode in column 1. (movlw)
+0099   3050           00259 movlw 'P'
+Warning[203]: Found opcode in column 1. (call)
+009A   2196           00260 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+009B   3033           00261 movlw '3'
+Warning[203]: Found opcode in column 1. (call)
+009C   2196           00262 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (return)
+009D   0008           00263 return
+                      00264 
+                      00265 ;*************************************************************************************************
+                      00266 ;lectura de cada canal
+                      00267 ;*************************************************************************************************
+                      00268 
+                      00269 
+009E                  00270 LEER_CANAL_0
+Warning[203]: Found opcode in column 1. (movlw)
+009E   30C1           00271 movlw 0xC1     ; configuracion para leer canal 0
+Warning[203]: Found opcode in column 1. (movwf)
+009F   009F           00272 movwf ADCON0 
+Warning[203]: Found opcode in column 1. (call)
+00A0   20BA           00273 call CONVERTIR ;Salta a la rutina de conversión del A/D
+Warning[203]: Found opcode in column 1. (movf)
+00A1   081E           00274 movf ADRESH, W
+Warning[203]: Found opcode in column 1. (movwf)
+00A2   00B5           00275 movwf VALUE_ADC
+Warning[203]: Found opcode in column 1. (goto)
+00A3   2900           00276 goto MOSTRAR
+Warning[203]: Found opcode in column 1. (return)
+00A4   0008           00277 return
+                      00278 
+00A5                  00279 LEER_CANAL_1
+Warning[203]: Found opcode in column 1. (movlw)
+00A5   30C9           00280 movlw 0xC9  ; configuracion para leer canal 1
+Warning[203]: Found opcode in column 1. (movwf)
+00A6   009F           00281 movwf ADCON0 
+Warning[203]: Found opcode in column 1. (call)
+00A7   20BA           00282 call CONVERTIR ;Salta a la rutina de conversión del A/D
+Warning[203]: Found opcode in column 1. (movf)
+00A8   081E           00283 movf ADRESH, W
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (movwf)
+00A9   00B5           00284 movwf VALUE_ADC
+Warning[203]: Found opcode in column 1. (goto)
+00AA   2920           00285 goto MOSTRAR1
+Warning[203]: Found opcode in column 1. (return)
+00AB   0008           00286 return
+                      00287 
+00AC                  00288 LEER_CANAL_2
+Warning[203]: Found opcode in column 1. (movlw)
+00AC   30D1           00289 movlw 0xD1   ; configuracion para leer canal 2
+Warning[203]: Found opcode in column 1. (movwf)
+00AD   009F           00290 movwf ADCON0 
+Warning[203]: Found opcode in column 1. (call)
+00AE   20BA           00291 call CONVERTIR ;Salta a la rutina de conversión del A/D
+Warning[203]: Found opcode in column 1. (movf)
+00AF   081E           00292 movf ADRESH, W
+Warning[203]: Found opcode in column 1. (movwf)
+00B0   00B5           00293 movwf VALUE_ADC
+Warning[203]: Found opcode in column 1. (goto)
+00B1   2940           00294 goto MOSTRAR2
+Warning[203]: Found opcode in column 1. (return)
+00B2   0008           00295 return
+                      00296 
+00B3                  00297 LEER_CANAL_3
+Warning[203]: Found opcode in column 1. (movlw)
+00B3   30D9           00298 movlw 0xD9  ; configuracion para leer canal 3
+Warning[203]: Found opcode in column 1. (movwf)
+00B4   009F           00299 movwf ADCON0 
+Warning[203]: Found opcode in column 1. (call)
+00B5   20BA           00300 call CONVERTIR ;Salta a la rutina de conversión del A/D
+Warning[203]: Found opcode in column 1. (movf)
+00B6   081E           00301 movf ADRESH, W
+Warning[203]: Found opcode in column 1. (movwf)
+00B7   00B5           00302 movwf VALUE_ADC
+Warning[203]: Found opcode in column 1. (goto)
+00B8   2960           00303 goto MOSTRAR3
+Warning[203]: Found opcode in column 1. (return)
+00B9   0008           00304 return
+                      00305 
+00BA                  00306 CONVERTIR
+Warning[203]: Found opcode in column 1. (movlw)
+00BA   300F           00307 movlw 0x0F
+Warning[203]: Found opcode in column 1. (movwf)
+00BB   00AA           00308 movwf VAR
+Warning[203]: Found opcode in column 1. (decfsz)
+00BC   0BAA           00309 decfsz VAR, F ;Tiempo de retardo para la conversión
+Warning[203]: Found opcode in column 1. (goto)
+00BD   28BC           00310 goto $-1
+Warning[203]: Found opcode in column 1. (clrf)
+00BE   019E           00311 clrf ADRESH ;Limpia el registro de resultado del A/D
+Warning[203]: Found opcode in column 1. (bsf)
+00BF   151F           00312 bsf ADCON0, GO_DONE ;Conversión en progreso
+00C0                  00313 LOOP_AD
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (btfsc)
+00C0   191F           00314 btfsc ADCON0, GO_DONE ;Brinca mientras la conversión
+Warning[203]: Found opcode in column 1. (goto)
+00C1   28C0           00315 goto LOOP_AD ;es completada
+Warning[203]: Found opcode in column 1. (bcf)
+00C2   101F           00316 bcf ADCON0, ADON ;Modulo de conversión fuera de progreso
+Warning[203]: Found opcode in column 1. (return)
+00C3   0008           00317 return
+                      00318 
+                      00319 ;***********************************************************************
+                      00320 ;Cosas que se ven en pantalla
+                      00321 ;***********************************************************************
+                      00322 
+                      00323 
+00C4                  00324 CANAL1LIMPIO
+Warning[203]: Found opcode in column 1. (movlw)
+00C4   3030           00325 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00C5   2196           00326 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00C6   3030           00327 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00C7   2196           00328 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00C8   3030           00329 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00C9   2196           00330 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00CA   3030           00331 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00CB   2196           00332 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00CC   3030           00333 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00CD   2196           00334 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (goto)
+00CE   28F0           00335 goto VACIO
+                      00336 
+00CF                  00337 CANAL2LIMPIO
+Warning[203]: Found opcode in column 1. (movlw)
+00CF   3030           00338 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00D0   2196           00339 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00D1   3030           00340 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00D2   2196           00341 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00D3   3030           00342 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00D4   2196           00343 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00D5   3030           00344 movlw '0'
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (call)
+00D6   2196           00345 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00D7   3030           00346 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00D8   2196           00347 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (goto)
+00D9   28F0           00348 goto VACIO
+                      00349 
+00DA                  00350 CANAL3LIMPIO
+Warning[203]: Found opcode in column 1. (movlw)
+00DA   3030           00351 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00DB   2196           00352 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00DC   3030           00353 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00DD   2196           00354 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00DE   3030           00355 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00DF   2196           00356 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00E0   3030           00357 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00E1   2196           00358 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00E2   3030           00359 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00E3   2196           00360 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (goto)
+00E4   28F0           00361 goto VACIO
+                      00362 
+00E5                  00363 CANAL4LIMPIO
+Warning[203]: Found opcode in column 1. (movlw)
+00E5   3030           00364 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00E6   2196           00365 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00E7   3030           00366 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00E8   2196           00367 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00E9   3030           00368 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00EA   2196           00369 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00EB   3030           00370 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+00EC   2196           00371 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movlw)
+00ED   3030           00372 movlw '0'
+Warning[203]: Found opcode in column 1. (call)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00EE   2196           00373 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (goto)
+00EF   28F0           00374 goto VACIO
+                      00375 
+                      00376 
+00F0                  00377 VACIO
+Warning[203]: Found opcode in column 1. (movlw)
+00F0   3030           00378 movlw '0'
+Warning[203]: Found opcode in column 1. (movwf)
+00F1   00A5           00379 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+00F2   2218           00380 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+00F3   3020           00381 movlw   ' '
+Warning[203]: Found opcode in column 1. (movwf)
+00F4   00A5           00382 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+00F5   2218           00383 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+00F6   3030           00384 movlw '0'
+Warning[203]: Found opcode in column 1. (movwf)
+00F7   00A5           00385 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+00F8   2218           00386 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+00F9   3030           00387 movlw '0'
+Warning[203]: Found opcode in column 1. (movwf)
+00FA   00A5           00388 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+00FB   2218           00389 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+00FC   3030           00390 movlw '0'
+Warning[203]: Found opcode in column 1. (movwf)
+00FD   00A5           00391 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+00FE   2218           00392 call DATALCD
+Warning[203]: Found opcode in column 1. (return)
+00FF   0008           00393 return
+                      00394 
+0100                  00395 MOSTRAR   ;rutina para mostrar el valor del canal 0
+Warning[203]: Found opcode in column 1. (movlw)
+0100   3000           00396 movlw .0
+Warning[203]: Found opcode in column 1. (call)
+0101   2268           00397 call Cursor_Linea_1
+Warning[203]: Found opcode in column 1. (btfss)
+0102   1C37           00398 btfss canales,0  ;EL CANAL ESTA ACTIVO?
+Warning[203]: Found opcode in column 1. (goto)
+0103   2905           00399 goto $+2         ; si no se va a transmitir ceros y mostrar ceros en display
+Warning[203]: Found opcode in column 1. (goto)
+0104   2907           00400 goto $+3         ;si si va a mostrar lo que tenga VALUE_ADC potenciometro
+Warning[203]: Found opcode in column 1. (call)
+0105   20C4           00401 call CANAL1LIMPIO
+Warning[203]: Found opcode in column 1. (return)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0106   0008           00402 return
+Warning[203]: Found opcode in column 1. (movf)
+0107   0835           00403 movf VALUE_ADC, W
+Warning[203]: Found opcode in column 1. (call)
+0108   2180           00404 call Hex_Ascii
+Warning[203]: Found opcode in column 1. (movlw)
+0109   3041           00405 movlw 'A'
+Warning[203]: Found opcode in column 1. (call)
+010A   2196           00406 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+010B   00A5           00407 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+010C   2218           00408 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+010D   3020           00409 movlw   ' '
+Warning[203]: Found opcode in column 1. (movwf)
+010E   00A5           00410 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+010F   2218           00411 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0110   082B           00412 movf ASCII_H,W
+Warning[203]: Found opcode in column 1. (addlw)
+0111   3E30           00413 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0112   2196           00414 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0113   00A5           00415 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0114   2218           00416 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0115   082C           00417 movf ASCII_M,W
+Warning[203]: Found opcode in column 1. (addlw)
+0116   3E30           00418 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0117   2196           00419 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0118   00A5           00420 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0119   2218           00421 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+011A   082D           00422 movf ASCII_L,W
+Warning[203]: Found opcode in column 1. (addlw)
+011B   3E30           00423 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+011C   2196           00424 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+011D   00A5           00425 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+011E   2218           00426 call DATALCD
+Warning[203]: Found opcode in column 1. (return)
+011F   0008           00427 return
+                      00428 
+0120                  00429 MOSTRAR1  ;rutina para mostrar el valor del canal 1
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (movlw)
+0120   3008           00430 movlw .8
+Warning[203]: Found opcode in column 1. (call)
+0121   2268           00431 call Cursor_Linea_1
+Warning[203]: Found opcode in column 1. (btfss)
+0122   1CB7           00432 btfss canales,1
+Warning[203]: Found opcode in column 1. (goto)
+0123   2925           00433 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+0124   2927           00434 goto $+3
+Warning[203]: Found opcode in column 1. (call)
+0125   20CF           00435 call CANAL2LIMPIO
+Warning[203]: Found opcode in column 1. (return)
+0126   0008           00436 return
+Warning[203]: Found opcode in column 1. (movf)
+0127   0835           00437 movf VALUE_ADC, W
+Warning[203]: Found opcode in column 1. (call)
+0128   2180           00438 call Hex_Ascii
+Warning[203]: Found opcode in column 1. (movlw)
+0129   3042           00439 movlw 'B'
+Warning[203]: Found opcode in column 1. (call)
+012A   2196           00440 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+012B   00A5           00441 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+012C   2218           00442 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+012D   3020           00443 movlw   ' '
+Warning[203]: Found opcode in column 1. (movwf)
+012E   00A5           00444 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+012F   2218           00445 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0130   082B           00446 movf ASCII_H,W
+Warning[203]: Found opcode in column 1. (addlw)
+0131   3E30           00447 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0132   2196           00448 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0133   00A5           00449 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0134   2218           00450 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0135   082C           00451 movf ASCII_M,W
+Warning[203]: Found opcode in column 1. (addlw)
+0136   3E30           00452 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0137   2196           00453 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0138   00A5           00454 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0139   2218           00455 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+013A   082D           00456 movf ASCII_L,W
+Warning[203]: Found opcode in column 1. (addlw)
+013B   3E30           00457 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+013C   2196           00458 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+013D   00A5           00459 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+013E   2218           00460 call DATALCD
+Warning[203]: Found opcode in column 1. (return)
+013F   0008           00461 return
+                      00462 
+0140                  00463 MOSTRAR2  ;rutina para mostrar el valor del canal 2
+Warning[203]: Found opcode in column 1. (movlw)
+0140   3000           00464 movlw .0
+Warning[203]: Found opcode in column 1. (call)
+0141   226B           00465 call Cursor_Linea_2
+Warning[203]: Found opcode in column 1. (btfss)
+0142   1D37           00466 btfss canales,2
+Warning[203]: Found opcode in column 1. (goto)
+0143   2945           00467 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+0144   2947           00468 goto $+3
+Warning[203]: Found opcode in column 1. (call)
+0145   20DA           00469 call CANAL3LIMPIO
+Warning[203]: Found opcode in column 1. (return)
+0146   0008           00470 return
+Warning[203]: Found opcode in column 1. (movf)
+0147   0835           00471 movf VALUE_ADC, W
+Warning[203]: Found opcode in column 1. (call)
+0148   2180           00472 call Hex_Ascii
+Warning[203]: Found opcode in column 1. (movlw)
+0149   3043           00473 movlw 'C'
+Warning[203]: Found opcode in column 1. (call)
+014A   2196           00474 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+014B   00A5           00475 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+014C   2218           00476 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+014D   3020           00477 movlw   ' '
+Warning[203]: Found opcode in column 1. (movwf)
+014E   00A5           00478 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+014F   2218           00479 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0150   082B           00480 movf ASCII_H,W
+Warning[203]: Found opcode in column 1. (addlw)
+0151   3E30           00481 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0152   2196           00482 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0153   00A5           00483 movwf DATA_8
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (call)
+0154   2218           00484 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0155   082C           00485 movf ASCII_M,W
+Warning[203]: Found opcode in column 1. (addlw)
+0156   3E30           00486 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0157   2196           00487 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0158   00A5           00488 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0159   2218           00489 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+015A   082D           00490 movf ASCII_L,W
+Warning[203]: Found opcode in column 1. (addlw)
+015B   3E30           00491 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+015C   2196           00492 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+015D   00A5           00493 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+015E   2218           00494 call DATALCD
+Warning[203]: Found opcode in column 1. (return)
+015F   0008           00495 return
+                      00496 
+0160                  00497 MOSTRAR3  ;rutina para mostrar el valor del canal 3
+Warning[203]: Found opcode in column 1. (movlw)
+0160   3008           00498 movlw .8
+Warning[203]: Found opcode in column 1. (call)
+0161   226B           00499 call Cursor_Linea_2
+Warning[203]: Found opcode in column 1. (btfss)
+0162   1DB7           00500 btfss canales,3
+Warning[203]: Found opcode in column 1. (goto)
+0163   2965           00501 goto $+2
+Warning[203]: Found opcode in column 1. (goto)
+0164   2967           00502 goto $+3
+Warning[203]: Found opcode in column 1. (call)
+0165   20E5           00503 call CANAL4LIMPIO
+Warning[203]: Found opcode in column 1. (return)
+0166   0008           00504 return
+Warning[203]: Found opcode in column 1. (movf)
+0167   0835           00505 movf VALUE_ADC, W
+Warning[203]: Found opcode in column 1. (call)
+0168   2180           00506 call Hex_Ascii
+Warning[203]: Found opcode in column 1. (movlw)
+0169   3044           00507 movlw 'D'
+Warning[203]: Found opcode in column 1. (call)
+016A   2196           00508 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+016B   00A5           00509 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+016C   2218           00510 call DATALCD
+Warning[203]: Found opcode in column 1. (movlw)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+016D   3020           00511 movlw   ' '
+Warning[203]: Found opcode in column 1. (movwf)
+016E   00A5           00512 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+016F   2218           00513 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0170   082B           00514 movf ASCII_H,W
+Warning[203]: Found opcode in column 1. (addlw)
+0171   3E30           00515 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0172   2196           00516 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0173   00A5           00517 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0174   2218           00518 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+0175   082C           00519 movf ASCII_M,W
+Warning[203]: Found opcode in column 1. (addlw)
+0176   3E30           00520 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+0177   2196           00521 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+0178   00A5           00522 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0179   2218           00523 call DATALCD
+Warning[203]: Found opcode in column 1. (movf)
+017A   082D           00524 movf ASCII_L,W
+Warning[203]: Found opcode in column 1. (addlw)
+017B   3E30           00525 addlw 0x30
+Warning[203]: Found opcode in column 1. (call)
+017C   2196           00526 call TRANSMITIR
+Warning[203]: Found opcode in column 1. (movwf)
+017D   00A5           00527 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+017E   2218           00528 call DATALCD
+Warning[203]: Found opcode in column 1. (return)
+017F   0008           00529 return
+                      00530 
+                      00531 
+                      00532 ;----------------------------------------------
+0180                  00533 Hex_Ascii
+Warning[203]: Found opcode in column 1. (movwf)
+0180   00AE           00534 movwf HEXADECIMAL
+Warning[203]: Found opcode in column 1. (clrf)
+0181   01AB           00535 clrf ASCII_H ;Para BCD D'0'
+Warning[203]: Found opcode in column 1. (clrf)
+0182   01AC           00536 clrf ASCII_M ;Para BCD D'0'
+Warning[203]: Found opcode in column 1. (clrf)
+0183   01AD           00537 clrf ASCII_L ;Para BCD D'0'
+0184                  00538 Centenas
+Warning[203]: Found opcode in column 1. (movlw)
+0184   3064           00539 movlw D'100' ;D'100' --> W
+Warning[203]: Found opcode in column 1. (subwf)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0185   022E           00540 subwf HEXADECIMAL,W ;HEXADECIMAL - D'100' --> W
+Warning[203]: Found opcode in column 1. (btfss)
+0186   1C03           00541 btfss STATUS,C ;ø HEXADECIMAL es menor que D'100' ?
+Warning[203]: Found opcode in column 1. (goto)
+0187   298B           00542 goto Decenas ;Si
+Warning[203]: Found opcode in column 1. (movwf)
+0188   00AE           00543 movwf HEXADECIMAL ;Salva el resto
+Warning[203]: Found opcode in column 1. (incf)
+0189   0AAB           00544 incf ASCII_H,F ;Incrementa el contador de centenas BCD
+Warning[203]: Found opcode in column 1. (goto)
+018A   2984           00545 goto Centenas ;Vuelve por otros D'100'
+018B                  00546 Decenas
+Warning[203]: Found opcode in column 1. (movlw)
+018B   300A           00547 movlw D'10' ;D'10' --> W
+Warning[203]: Found opcode in column 1. (subwf)
+018C   022E           00548 subwf HEXADECIMAL,W ;HEXADECIMAL - D'10' --> W
+Warning[203]: Found opcode in column 1. (btfss)
+018D   1C03           00549 btfss STATUS,C ;ø HEXADECIMAL es menor que D'10' ?
+Warning[203]: Found opcode in column 1. (goto)
+018E   2992           00550 goto Unidades ;Si
+Warning[203]: Found opcode in column 1. (movwf)
+018F   00AE           00551 movwf HEXADECIMAL ;Salva el resto
+Warning[203]: Found opcode in column 1. (incf)
+0190   0AAC           00552 incf ASCII_M,F ;Incrementa el contador de decenas BCD
+Warning[203]: Found opcode in column 1. (goto)
+0191   298B           00553 goto Decenas ;Vuelve por otros D'10'
+0192                  00554 Unidades
+Warning[203]: Found opcode in column 1. (Movf)
+0192   082E           00555 Movf HEXADECIMAL,W ;El resto pertenece
+Warning[203]: Found opcode in column 1. (Movwf)
+0193   00AD           00556 Movwf ASCII_L ;a las unidades BCD
+Warning[203]: Found opcode in column 1. (Clrf)
+0194   01AE           00557 Clrf HEXADECIMAL ;Pone a cero el registro HEXADECIMAL
+Warning[203]: Found opcode in column 1. (return)
+0195   0008           00558 return ;Retorna
+                      00559 
+                      00560 
+                      00561 ;******************************************************************************************************
+0196                  00562 TRANSMITIR
+                      00563 ;Primeramente verifica y espera a que el puerto serie este listo para
+                      00564 ;transmitir (que tenga espacio en el buffer), esto se puede hacer
+                      00565 ;verificando que la bandera de interrupción del modulo este activada
+                      00566 ;(nótese que esta bandera opera aun cuando la interrupción esta desactivada)
+Warning[203]: Found opcode in column 1. (btfss)
+0196   1E0C           00567 btfss PIR1, TXIF
+Warning[203]: Found opcode in column 1. (goto)
+0197   2996           00568 goto $-1
+                      00569 ;Para enviar el dato, simplemente se escribe el mismo al registro de
+                      00570 ;transmision
+Warning[203]: Found opcode in column 1. (movwf)
+0198   0099           00571 movwf TXREG
+Warning[203]: Found opcode in column 1. (return)
+0199   0008           00572 return
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00573 ;*******************************************************************************************+
+019A                  00574 INIT_RS232
+Warning[206]: Found call to macro in column 1. (Bank1)
+                      00575 Bank1 ;Selecciona Banco 1
+Warning[203]: Found opcode in column 1. (Bsf)
+019A   1683               M Bsf STATUS,RP0
+Warning[203]: Found opcode in column 1. (Bcf)
+019B   1303               M Bcf STATUS,RP1
+Warning[203]: Found opcode in column 1. (movlw)
+019C   3026           00576 movlw 0x26 ;Configuración del puerto serie: 8 bits, TX
+Warning[203]: Found opcode in column 1. (movwf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+019D   0098           00577 movwf TXSTA ;habilitada, modo asíncrono y alta velocidad
+                      00578 ;(los demás bits desactivan otras
+                      00579 ;caracteristicas)
+Warning[203]: Found opcode in column 1. (movlw)
+019E   3019           00580 movlw d'25' ;Establece la velocidad a 9600 baudios
+Warning[203]: Found opcode in column 1. (movwf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+019F   0099           00581 movwf SPBRG ;usando un oscilador a 4MHz
+Warning[203]: Found opcode in column 1. (bsf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01A0   168C           00582 bsf PIE1, RCIE ;Habilita la interrupción de recepción de la
+                      00583 ;USART
+Warning[206]: Found call to macro in column 1. (Bank0)
+                      00584 Bank0 ;Selecciona Banco 0
+Warning[203]: Found opcode in column 1. (Bcf)
+01A1   1283               M Bcf STATUS,RP0
+Warning[203]: Found opcode in column 1. (Bcf)
+01A2   1303               M Bcf STATUS,RP1
+Warning[203]: Found opcode in column 1. (movlw)
+01A3   3090           00585 movlw 0x90 ;Configuración del puerto serie: Puerto
+                      00586 ;habilitado
+Warning[203]: Found opcode in column 1. (movwf)
+01A4   0098           00587 movwf RCSTA ;8 bits, recepción continua habilitada
+                      00588 ;direcciones (los demás bits no tienen efecto)
+Warning[203]: Found opcode in column 1. (clrf)
+01A5   018C           00589 clrf PIR1 ;Borra todas las banderas de interrupción
+Warning[203]: Found opcode in column 1. (bsf)
+01A6   178B           00590 bsf INTCON,GIE ;Desenmascara todas las interrupciones
+Warning[203]: Found opcode in column 1. (bsf)
+01A7   170B           00591 bsf INTCON,PEIE ;Desenmascara todas las interrupciones por
+                      00592 ;perifericos
+Warning[203]: Found opcode in column 1. (return)
+01A8   0008           00593 return
+                      00594 
+01A9                  00595 RX_Interrupcion
+Warning[203]: Found opcode in column 1. (btfss)
+01A9   1E8C           00596 btfss PIR1, RCIF ;Verifica si hay un dato en el buffer
+Warning[203]: Found opcode in column 1. (return)
+01AA   0008           00597 return ;En caso de no haber, regresa
+Warning[203]: Found opcode in column 1. (movf)
+01AB   081A           00598 movf RCREG, W ;si hay dato, lo toma del registro RCREG
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (movwf)
+01AC   00B8           00599 movwf DATO_RX ;Hubo dato, así que se guarda
+Warning[203]: Found opcode in column 1. (movwf)
+01AD   00B4           00600 movwf rx_dato
+                      00601 
+Warning[203]: Found opcode in column 1. (movlw)
+01AE   3031           00602 movlw '1' ;Se verifica si se recibió un '1' 
+Warning[203]: Found opcode in column 1. (subwf)
+01AF   0238           00603 subwf DATO_RX, w
+Warning[203]: Found opcode in column 1. (btfsc)
+01B0   1903           00604 btfsc STATUS, Z
+Warning[203]: Found opcode in column 1. (goto)
+01B1   2876           00605 goto ACTIVOCAN1 ;De ser así, va a la rutina de CANAL 1
+Warning[203]: Found opcode in column 1. (movlw)
+01B2   3032           00606 movlw '2' ;Se verifica si se recibió un '2' 
+Warning[203]: Found opcode in column 1. (subwf)
+01B3   0238           00607 subwf DATO_RX, w
+Warning[203]: Found opcode in column 1. (btfsc)
+01B4   1903           00608 btfsc STATUS, Z
+Warning[203]: Found opcode in column 1. (goto)
+01B5   2880           00609 goto ACTIVOCAN2 ;De ser así, va a la rutina de CANAL 2
+Warning[203]: Found opcode in column 1. (movlw)
+01B6   3033           00610 movlw '3' ;Se verifica si se recibió un '3'
+Warning[203]: Found opcode in column 1. (subwf)
+01B7   0238           00611 subwf DATO_RX, w
+Warning[203]: Found opcode in column 1. (btfsc)
+01B8   1903           00612 btfsc STATUS, Z
+Warning[203]: Found opcode in column 1. (goto)
+01B9   288A           00613 goto ACTIVOCAN3 ;De ser así, va a la rutina de CANAL 3
+Warning[203]: Found opcode in column 1. (movlw)
+01BA   3034           00614 movlw '4' ;Se verifica si se recibió un '4'
+Warning[203]: Found opcode in column 1. (subwf)
+01BB   0238           00615 subwf DATO_RX, w
+Warning[203]: Found opcode in column 1. (btfsc)
+01BC   1903           00616 btfsc STATUS, Z
+Warning[203]: Found opcode in column 1. (goto)
+01BD   2894           00617 goto ACTIVOCAN4 ;De ser así, va a la rutina de CANAL 4
+Warning[203]: Found opcode in column 1. (return)
+01BE   0008           00618 return
+                      00619 
+                      00620 ;***********************************************************************
+                      00621 
+01BF                  00622 INIT_PORTS
+Warning[206]: Found call to macro in column 1. (Bank1)
+                      00623 Bank1 ;Select Bank 1
+Warning[203]: Found opcode in column 1. (Bsf)
+01BF   1683               M Bsf STATUS,RP0
+Warning[203]: Found opcode in column 1. (Bcf)
+01C0   1303               M Bcf STATUS,RP1
+Warning[203]: Found opcode in column 1. (movlw)
+01C1   3002           00624 movlw 0x02 
+Warning[203]: Found opcode in column 1. (movwf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01C2   009F           00625 movwf ADCON1
+Warning[203]: Found opcode in column 1. (movlw)
+01C3   300F           00626 movlw 0x0F
+Warning[203]: Found opcode in column 1. (movwf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01C4   0085           00627 movwf TRISA
+Warning[203]: Found opcode in column 1. (movlw)
+01C5   300F           00628 movlw 0x0F ;Configura el puerto B como salida (RB7 - RB4)
+Warning[203]: Found opcode in column 1. (movwf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01C6   0086           00629 movwf TRISB ;y como entradas (RB3 - RB0)
+Warning[203]: Found opcode in column 1. (movlw)
+01C7   3080           00630 movlw 0x80 ;Configura el puerto C como salida
+Warning[203]: Found opcode in column 1. (movwf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01C8   0087           00631 movwf TRISC
+Warning[203]: Found opcode in column 1. (clrf)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+01C9   0189           00632 clrf TRISE ; Configura el puerto E como salida
+Warning[206]: Found call to macro in column 1. (Bank0)
+                      00633 Bank0 ;Select Bank 0
+Warning[203]: Found opcode in column 1. (Bcf)
+01CA   1283               M Bcf STATUS,RP0
+Warning[203]: Found opcode in column 1. (Bcf)
+01CB   1303               M Bcf STATUS,RP1
+Warning[203]: Found opcode in column 1. (clrf)
+01CC   0185           00634 clrf PORTA ;Limpia el puerto A
+Warning[203]: Found opcode in column 1. (clrf)
+01CD   0186           00635 clrf PORTB ;Limpia el puerto B
+Warning[203]: Found opcode in column 1. (clrf)
+01CE   0187           00636 clrf PORTC ;Limpia el puerto C
+Warning[203]: Found opcode in column 1. (clrf)
+01CF   0189           00637 clrf PORTE ;Limpia el puerto E
+Warning[203]: Found opcode in column 1. (clrf)
+01D0   01B7           00638 clrf canales
+Warning[203]: Found opcode in column 1. (return)
+01D1   0008           00639 return
+                      00640 
+                      00641 ;*************************************************************************
+                      00642 ;* Inicialice LCD *
+                      00643 ;*************************************************************************
+01D2                  00644 INIT_LCD
+Warning[203]: Found opcode in column 1. (bcf)
+01D2   1207           00645 bcf RW
+Warning[203]: Found opcode in column 1. (bcf)
+01D3   1187           00646 bcf RS
+Warning[203]: Found opcode in column 1. (bcf)
+01D4   1287           00647 bcf E
+Warning[203]: Found opcode in column 1. (call)
+01D5   2240           00648 call Retardo_20ms
+Warning[203]: Found opcode in column 1. (movlw)
+01D6   3003           00649 movlw 0x03
+Warning[203]: Found opcode in column 1. (call)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01D7   21EF           00650 call Envia_Dato
+Warning[203]: Found opcode in column 1. (call)
+01D8   223B           00651 call Retardo_200micros
+Warning[203]: Found opcode in column 1. (movlw)
+01D9   3003           00652 movlw 0x03
+Warning[203]: Found opcode in column 1. (call)
+01DA   21EF           00653 call Envia_Dato
+Warning[203]: Found opcode in column 1. (call)
+01DB   223E           00654 call Retardo_20micros
+Warning[203]: Found opcode in column 1. (movlw)
+01DC   3003           00655 movlw 0x03
+Warning[203]: Found opcode in column 1. (call)
+01DD   21EF           00656 call Envia_Dato
+Warning[203]: Found opcode in column 1. (call)
+01DE   223E           00657 call Retardo_20micros ;Retardo necesario para simular en PROTEUS
+Warning[203]: Found opcode in column 1. (movlw)
+01DF   3002           00658 movlw 0x02
+Warning[203]: Found opcode in column 1. (call)
+01E0   21EF           00659 call Envia_Dato
+Warning[203]: Found opcode in column 1. (call)
+01E1   223E           00660 call Retardo_20micros ;Retardo necesario para simular en PROTEUS
+                      00661 ;******** Modo de operación de 4 bits ***********
+Warning[203]: Found opcode in column 1. (movlw)
+01E2   3028           00662 movlw 0x28
+Warning[203]: Found opcode in column 1. (movwf)
+01E3   00A5           00663 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+01E4   21F7           00664 call COMMAND_DOUBLE
+Warning[203]: Found opcode in column 1. (movlw)
+01E5   3001           00665 movlw 0x01
+Warning[203]: Found opcode in column 1. (movwf)
+01E6   00A5           00666 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+01E7   21F7           00667 call COMMAND_DOUBLE
+Warning[203]: Found opcode in column 1. (movlw)
+01E8   3006           00668 movlw 0x06
+Warning[203]: Found opcode in column 1. (movwf)
+01E9   00A5           00669 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+01EA   21F7           00670 call COMMAND_DOUBLE
+Warning[203]: Found opcode in column 1. (movlw)
+01EB   300E           00671 movlw 0x0E
+Warning[203]: Found opcode in column 1. (movwf)
+01EC   00A5           00672 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+01ED   21F7           00673 call COMMAND_DOUBLE
+Warning[203]: Found opcode in column 1. (return)
+01EE   0008           00674 return
+                      00675 ;**************************************************************************
+                      00676 ;* Rutina para la configuración del LCD, pone el valor en el puerto *
+                      00677 ;**************************************************************************
+01EF                  00678 Envia_Dato
+Warning[203]: Found opcode in column 1. (movwf)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01EF   0089           00679 movwf PORTE
+Warning[203]: Found opcode in column 1. (bcf)
+01F0   1285           00680 bcf PORTA, 5
+Warning[203]: Found opcode in column 1. (bsf)
+01F1   1687           00681 bsf E
+Warning[203]: Found opcode in column 1. (call)
+01F2   2242           00682 call Retardo_5ms
+Warning[203]: Found opcode in column 1. (bcf)
+01F3   1287           00683 bcf E
+Warning[203]: Found opcode in column 1. (clrf)
+01F4   0189           00684 clrf PORTE
+Warning[203]: Found opcode in column 1. (bcf)
+01F5   1285           00685 bcf PORTA, 5
+Warning[203]: Found opcode in column 1. (return)
+01F6   0008           00686 return
+                      00687 ;*************************************************************************
+                      00688 ;* Rutina para mandar los datos de 8 bits para el LCD *
+                      00689 ;*************************************************************************
+01F7                  00690 COMMAND_DOUBLE
+                      00691 ;************* Envía parte alta *****************
+Warning[203]: Found opcode in column 1. (bcf)
+01F7   1287           00692 bcf E
+Warning[203]: Found opcode in column 1. (bcf)
+01F8   1187           00693 bcf RS
+Warning[203]: Found opcode in column 1. (bcf)
+01F9   1207           00694 bcf RW
+Warning[203]: Found opcode in column 1. (swapf)
+01FA   0E25           00695 swapf DATA_8, W
+Warning[203]: Found opcode in column 1. (movwf)
+01FB   00A5           00696 movwf DATA_8
+Warning[203]: Found opcode in column 1. (movf)
+01FC   0825           00697 movf DATA_8, W
+Warning[203]: Found opcode in column 1. (andlw)
+01FD   390F           00698 andlw 0x0F
+Warning[203]: Found opcode in column 1. (movwf)
+01FE   0089           00699 movwf PORTE
+Warning[203]: Found opcode in column 1. (movwf)
+01FF   00B3           00700 movwf VAR_AUX
+Warning[203]: Found opcode in column 1. (btfss)
+0200   1DB3           00701 btfss VAR_AUX, 3
+Warning[203]: Found opcode in column 1. (goto)
+0201   2A04           00702 goto $+3
+Warning[203]: Found opcode in column 1. (bsf)
+0202   1685           00703 bsf PORTA, 5
+Warning[203]: Found opcode in column 1. (goto)
+0203   2A05           00704 goto $+2
+Warning[203]: Found opcode in column 1. (bcf)
+0204   1285           00705 bcf PORTA, 5
+Warning[203]: Found opcode in column 1. (bsf)
+0205   1687           00706 bsf E
+Warning[203]: Found opcode in column 1. (call)
+0206   2242           00707 call Retardo_5ms
+Warning[203]: Found opcode in column 1. (bcf)
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0207   1287           00708 bcf E
+                      00709 ;*********** Envía parte baja *******************
+Warning[203]: Found opcode in column 1. (swapf)
+0208   0E25           00710 swapf DATA_8, W
+Warning[203]: Found opcode in column 1. (movwf)
+0209   00A5           00711 movwf DATA_8
+Warning[203]: Found opcode in column 1. (movf)
+020A   0825           00712 movf DATA_8, W
+Warning[203]: Found opcode in column 1. (andlw)
+020B   390F           00713 andlw 0x0F
+Warning[203]: Found opcode in column 1. (movwf)
+020C   0089           00714 movwf PORTE
+Warning[203]: Found opcode in column 1. (movwf)
+020D   00B3           00715 movwf VAR_AUX
+Warning[203]: Found opcode in column 1. (btfss)
+020E   1DB3           00716 btfss VAR_AUX, 3
+Warning[203]: Found opcode in column 1. (goto)
+020F   2A12           00717 goto $+3
+Warning[203]: Found opcode in column 1. (bsf)
+0210   1685           00718 bsf PORTA, 5
+Warning[203]: Found opcode in column 1. (goto)
+0211   2A13           00719 goto $+2
+Warning[203]: Found opcode in column 1. (bcf)
+0212   1285           00720 bcf PORTA, 5
+Warning[203]: Found opcode in column 1. (bsf)
+0213   1687           00721 bsf E
+Warning[203]: Found opcode in column 1. (call)
+0214   2242           00722 call Retardo_5ms
+Warning[203]: Found opcode in column 1. (bcf)
+0215   1287           00723 bcf E
+Warning[203]: Found opcode in column 1. (bsf)
+0216   1607           00724 bsf RW
+Warning[203]: Found opcode in column 1. (return)
+0217   0008           00725 return
+                      00726 ;**************************************************************************
+                      00727 ;* Rutina para poner el carácter en el LCD *
+                      00728 ;**************************************************************************
+0218                  00729 DATALCD
+                      00730 ;************* Envía parte alta *****************
+Warning[203]: Found opcode in column 1. (bsf)
+0218   1587           00731 bsf RS
+Warning[203]: Found opcode in column 1. (bcf)
+0219   1207           00732 bcf RW
+Warning[203]: Found opcode in column 1. (swapf)
+021A   0E25           00733 swapf DATA_8, W
+Warning[203]: Found opcode in column 1. (movwf)
+021B   00A5           00734 movwf DATA_8
+Warning[203]: Found opcode in column 1. (movf)
+021C   0825           00735 movf DATA_8, W
+Warning[203]: Found opcode in column 1. (andlw)
+021D   390F           00736 andlw 0x0F
+Warning[203]: Found opcode in column 1. (movwf)
+021E   0089           00737 movwf PORTE
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (movwf)
+021F   00B3           00738 movwf VAR_AUX
+Warning[203]: Found opcode in column 1. (btfss)
+0220   1DB3           00739 btfss VAR_AUX, 3
+Warning[203]: Found opcode in column 1. (goto)
+0221   2A24           00740 goto $+3
+Warning[203]: Found opcode in column 1. (bsf)
+0222   1685           00741 bsf PORTA, 5
+Warning[203]: Found opcode in column 1. (goto)
+0223   2A25           00742 goto $+2
+Warning[203]: Found opcode in column 1. (bcf)
+0224   1285           00743 bcf PORTA, 5
+Warning[203]: Found opcode in column 1. (bsf)
+0225   1687           00744 bsf E
+Warning[203]: Found opcode in column 1. (call)
+0226   2242           00745 call Retardo_5ms
+Warning[203]: Found opcode in column 1. (bcf)
+0227   1287           00746 bcf E
+Warning[203]: Found opcode in column 1. (bcf)
+0228   1187           00747 bcf RS
+                      00748 ;*********** Envía parte baja *******************
+Warning[203]: Found opcode in column 1. (bsf)
+0229   1587           00749 bsf RS
+Warning[203]: Found opcode in column 1. (swapf)
+022A   0E25           00750 swapf DATA_8, W
+Warning[203]: Found opcode in column 1. (movwf)
+022B   00A5           00751 movwf DATA_8
+Warning[203]: Found opcode in column 1. (movf)
+022C   0825           00752 movf DATA_8, W
+Warning[203]: Found opcode in column 1. (andlw)
+022D   390F           00753 andlw 0x0F
+Warning[203]: Found opcode in column 1. (movwf)
+022E   0089           00754 movwf PORTE
+Warning[203]: Found opcode in column 1. (movwf)
+022F   00B3           00755 movwf VAR_AUX
+Warning[203]: Found opcode in column 1. (btfss)
+0230   1DB3           00756 btfss VAR_AUX, 3
+Warning[203]: Found opcode in column 1. (goto)
+0231   2A34           00757 goto $+3
+Warning[203]: Found opcode in column 1. (bsf)
+0232   1685           00758 bsf PORTA, 5
+Warning[203]: Found opcode in column 1. (goto)
+0233   2A35           00759 goto $+2
+Warning[203]: Found opcode in column 1. (bcf)
+0234   1285           00760 bcf PORTA, 5
+Warning[203]: Found opcode in column 1. (bsf)
+0235   1687           00761 bsf E
+Warning[203]: Found opcode in column 1. (call)
+0236   2242           00762 call Retardo_5ms
+Warning[203]: Found opcode in column 1. (bcf)
+0237   1287           00763 bcf E
+Warning[203]: Found opcode in column 1. (bcf)
+0238   1187           00764 bcf RS
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (bsf)
+0239   1607           00765 bsf RW
+Warning[203]: Found opcode in column 1. (return)
+023A   0008           00766 return
+                      00767 ;**************************************************************************
+                      00768 ;* Rutina para un tiempo de retardo para iniciar el LCD *
+                      00769 ;**************************************************************************
+023B                  00770 Retardo_200micros ;La llamada "call" 2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (nop)
+023B   0000           00771 nop ;1 ciclo maquina.
+Warning[203]: Found opcode in column 1. (movlw)
+023C   3040           00772 movlw d'64' ;1 ciclo maquina. Este es el valor de "K".
+Warning[203]: Found opcode in column 1. (goto)
+023D   2A46           00773 goto RetardoMicros ;2 ciclos maquina.
+023E                  00774 Retardo_20micros ;La llamada "call" 2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (movlw)
+023E   3003           00775 movlw d'3' ;1 ciclo maquina. Este es el valor de "K".
+Warning[203]: Found opcode in column 1. (goto)
+023F   2A46           00776 goto RetardoMicros ;2 ciclos maquina.
+0240                  00777 Retardo_20ms ;La llamada "call" 2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (movlw)
+0240   3014           00778 movlw d'20' ;1 ciclo maquina. Este es el valor de "M".
+Warning[203]: Found opcode in column 1. (goto)
+0241   2A4A           00779 goto Retardos_ms ;2 ciclos maquina.
+0242                  00780 Retardo_5ms ;La llamada "call" 2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (movlw)
+0242   3005           00781 movlw d'5' ;1 ciclo maquina. Este es el valor de "M".
+Warning[203]: Found opcode in column 1. (goto)
+0243   2A4A           00782 goto Retardos_ms ;2 ciclos maquina.
+0244                  00783 Retardo_1s ;La llamada "call" 2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (movlw)
+0244   300A           00784 movlw d'10' ;1 ciclo maquina. Este es el valor de "N".
+Warning[203]: Found opcode in column 1. (goto)
+0245   2A53           00785 goto Retardo_1Decima ;2 ciclos maquina.
+                      00786 ;*************************************************************************
+                      00787 ;* El bloque "RetardoMicros" dura: *
+                      00788 ;* 1 + (K-1) + 2 + (K-1)x2 + 2 = (2 + 3K) ciclos m·quina. *
+                      00789 ;*En total estas subrutinas duran: *
+                      00790 ;* Retardo_200micros: 2 + 1 + 1 + 2 + (2 + 3K) = 200 cm = 200 µs. *
+                      00791 ;* Retardo_20micros : 2 + 1 + (2 + 3K) = 20 cm = 20 µs. *
+                      00792 ;*(para K= 5 y 4 MHz) *
+                      00793 ;*************************************************************************
+0246                  00794 RetardoMicros
+Warning[203]: Found opcode in column 1. (movwf)
+0246   00A7           00795 movwf CUENTA_1 ;Aporta 1 ciclo maquina.
+0247                  00796 micros_Loop
+Warning[203]: Found opcode in column 1. (decfsz)
+0247   0BA7           00797 decfsz CUENTA_1,F ;(K-1)x1 cm (no salta) + 2 cm (al saltar).
+Warning[203]: Found opcode in column 1. (goto)
+0248   2A47           00798 goto micros_Loop ;Aporta (K-1)x2 ciclos m·quina.
+Warning[203]: Found opcode in column 1. (return)
+0249   0008           00799 return ;El salto del retorno, 2 ciclos maquina.
+                      00800 ;*************************************************************************
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00801 ;* El bloque "Retardos_ms" dura: *
+                      00802 ;* 1 + M + M + KxM + (K-1)xM + Mx2 + (K-1)Mx2 + (M-1) + 2 + (M-1)x2 + 2 =*
+                      00803 ;* = (2 + 4M + 4KM) ciclos maquina. Para K=249 y M=1 supone 1002 ciclos *
+                      00804 ;* maquina que a 4 MHz son 1002 µs = 1 ms. *
+                      00805 ;* En total estas subrutinas duran: *
+                      00806 ;* Retardo_20ms :2 + 1 + 2 + (2 + 4M + 4KM) = 20007 cm = 20 ms. (M= 20 *
+                      00807 ;* y K=249). *
+                      00808 ;* Retardo_5ms :2 + 1 + 2 + (2 + 4M + 4KM) = 5007 cm = 5 ms. (M= 5 *
+                      00809 ;* y K=249). *
+                      00810 ;*************************************************************************
+024A                  00811 Retardos_ms
+Warning[203]: Found opcode in column 1. (movwf)
+024A   00A8           00812 movwf CUENTA_2 ;1 ciclo maquina.
+024B                  00813 Loop_Externo
+Warning[203]: Found opcode in column 1. (movlw)
+024B   30F9           00814 movlw d'249' ;Mx1 ciclos maquina. Es el valor de "K".
+Warning[203]: Found opcode in column 1. (movwf)
+024C   00A7           00815 movwf CUENTA_1 ;Mx1 ciclos maquina.
+024D                  00816 Loop_Interno
+Warning[203]: Found opcode in column 1. (nop)
+024D   0000           00817 nop ;KxMx1 ciclos maquina.
+Warning[203]: Found opcode in column 1. (decfsz)
+024E   0BA7           00818 decfsz CUENTA_1,F ;(K-1)xMx1 cm (no salta) + Mx2 cm(salta).
+Warning[203]: Found opcode in column 1. (goto)
+024F   2A4D           00819 goto Loop_Interno ;Aporta (K-1)xMx2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (decfsz)
+0250   0BA8           00820 decfsz CUENTA_2,F ;(M-1)x1 cm (no salta) + 2 cm (al saltar).
+Warning[203]: Found opcode in column 1. (goto)
+0251   2A4B           00821 goto Loop_Externo ;(M-1)x2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (return)
+0252   0008           00822 return ;El salto del retorno 2 ciclos maquina.
+                      00823 ;*************************************************************************
+                      00824 ;*El bloque "Retardo_1Decima" tarda: *
+                      00825 ;* 1 + N + N + MxN + MxN + KxMxN + (K-1)xMxN + MxNx2 + (K-1)xMxNx2 + *
+                      00826 ;* + (M-1)xN + Nx2 + (M-1)xNx2 + (N-1) + 2 + (N-1)x2 + 2 = *
+                      00827 ;* = (2 + 4M + 4MN + 4KM) ciclos maquina. Para K=249, M=100 y N=1 supone *
+                      00828 ;* 100011 ciclos maquina que a 4 MHz son 100011 µs = 100 ms = 0,1 s = 1 *
+                      00829 ;* decima de segundo. *
+                      00830 ;*************************************************************************
+0253                  00831 Retardo_1Decima
+Warning[203]: Found opcode in column 1. (movwf)
+0253   00A9           00832 movwf CUENTA_3 ;1 ciclo maquina.
+0254                  00833 Loop_Externo2
+Warning[203]: Found opcode in column 1. (movlw)
+0254   3064           00834 movlw d'100' ;Nx1 ciclos maquina. Es el valor de "M".
+Warning[203]: Found opcode in column 1. (movwf)
+0255   00A8           00835 movwf CUENTA_2 ;Nx1 ciclos maquina.
+0256                  00836 Loop_Externo_1
+Warning[203]: Found opcode in column 1. (movlw)
+0256   30F9           00837 movlw d'249' ;MxNx1 ciclos maquina. Es el valor de "K".
+Warning[203]: Found opcode in column 1. (movwf)
+0257   00A7           00838 movwf CUENTA_1 ;MxNx1 ciclos maquina.
+0258                  00839 Loop_Interno_1
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (nop)
+0258   0000           00840 nop ;KxMxNx1 ciclos maquina.
+Warning[203]: Found opcode in column 1. (decfsz)
+0259   0BA7           00841 decfsz CUENTA_1,F ;(K-1)xMxNx1 cm (no salta) + MxNx2 cm
+                      00842 ;(al saltar).
+Warning[203]: Found opcode in column 1. (goto)
+025A   2A58           00843 goto Loop_Interno_1 ;(K-1)xMxNx2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (decfsz)
+025B   0BA8           00844 decfsz CUENTA_2,F ;(M-1)xNx1 cm (cuando no salta) + Nx2 cm
+                      00845 ;(al saltar).
+Warning[203]: Found opcode in column 1. (goto)
+025C   2A56           00846 goto Loop_Externo_1 ;(M-1)xNx2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (decfsz)
+025D   0BA9           00847 decfsz CUENTA_3,F ;(N-1)x1 cm (cuando no salta) + 2 cm
+                      00848 ;(al saltar).
+Warning[203]: Found opcode in column 1. (goto)
+025E   2A54           00849 goto Loop_Externo2 ;(N-1)x2 ciclos maquina.
+Warning[203]: Found opcode in column 1. (return)
+025F   0008           00850 return ;El salto del retorno,2 ciclos maquina.
+                      00851 ;*************************************************************************
+                      00852 ;* En total estas subrutinas dura: *
+                      00853 ;* Retardo_1s:2 + 1 + 2 + (2 + 4N + 4MN + 4KMN) = 1000047 cm = 1 s. *
+                      00854 ;* (N= 10, M=100 y K=249). *
+                      00855 ;*************************************************************************
+                      00856 ;**************************************************************************
+                      00857 ;* Rutina para poner mensajes en el LCD *
+                      00858 ;**************************************************************************
+                      00859 ;**************************************************************************
+                      00860 ;* Rutina para limpiar el LCD *
+                      00861 ;**************************************************************************
+0260                  00862 CLEAR_LCD
+Warning[203]: Found opcode in column 1. (movlw)
+0260   3001           00863 movlw 0x01
+Warning[203]: Found opcode in column 1. (movwf)
+0261   00A5           00864 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0262   21F7           00865 call COMMAND_DOUBLE
+Warning[203]: Found opcode in column 1. (return)
+0263   0008           00866 return
+                      00867 ;**************************************************************************
+                      00868 ;* Rutina para poner el cursor al inicio del LCD *
+                      00869 ;**************************************************************************
+0264                  00870 CURSOR_INIT
+Warning[203]: Found opcode in column 1. (movlw)
+0264   3080           00871 movlw 0x80
+Warning[203]: Found opcode in column 1. (movwf)
+0265   00A5           00872 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0266   21F7           00873 call COMMAND_DOUBLE
+Warning[203]: Found opcode in column 1. (return)
+0267   0008           00874 return
+                      00875 ;************************************************************************
+                      00876 ;* Rutina para poner el cursor en alguna posición de la línea 1 o 2 del *
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00877 ;* LCD *
+                      00878 ;************************************************************************
+0268                  00879 Cursor_Linea_1 ;Cursor a posición de la línea 1,a partir
+Warning[203]: Found opcode in column 1. (Iorlw)
+0268   3880           00880 Iorlw b'10000000' ;de la dirección 00h de la DDRAM ms el
+Warning[203]: Found opcode in column 1. (movwf)
+0269   00A5           00881 movwf DATA_8 ;valor del registro W.
+Warning[203]: Found opcode in column 1. (goto)
+026A   29F7           00882 goto COMMAND_DOUBLE
+026B                  00883 Cursor_Linea_2 ;Cursor a posición de la línea 2, a partir
+Warning[203]: Found opcode in column 1. (iorlw)
+026B   38C0           00884 iorlw b'11000000' ;de la dirección 40h de la DDRAM ms el
+Warning[203]: Found opcode in column 1. (movwf)
+026C   00A5           00885 movwf DATA_8 ;valor del registro W.
+Warning[203]: Found opcode in column 1. (goto)
+026D   29F7           00886 goto COMMAND_DOUBLE
+                      00887 ;**************************************************************************
+                      00888 ;* Estas son las tablas para el LCD. En la posición 400 en la memoria *
+                      00889 ;**************************************************************************
+                      00890 
+026E                  00891 SET_MESSAGE
+026E                  00892 FINAL
+Warning[203]: Found opcode in column 1. (movlw)
+026E   3004           00893 movlw HIGH TABLA
+Warning[203]: Found opcode in column 1. (movwf)
+026F   008A           00894 movwf PCLATH
+Warning[203]: Found opcode in column 1. (movf)
+0270   082A           00895 movf VAR, W
+Warning[203]: Found opcode in column 1. (call)
+0271   2400           00896 call TABLA
+Warning[203]: Found opcode in column 1. (addlw)
+0272   3E00           00897 addlw .00
+Warning[203]: Found opcode in column 1. (btfsc)
+0273   1903           00898 btfsc STATUS, Z
+Warning[203]: Found opcode in column 1. (return)
+0274   0008           00899 return
+Warning[203]: Found opcode in column 1. (movwf)
+0275   00A5           00900 movwf DATA_8
+Warning[203]: Found opcode in column 1. (call)
+0276   2218           00901 call DATALCD
+Warning[203]: Found opcode in column 1. (incf)
+0277   0AAA           00902 incf VAR, F
+Warning[203]: Found opcode in column 1. (goto)
+0278   2A6E           00903 goto FINAL
+                      00904 ;**************************************************
+                      00905 ;MENU
+                      00906 
+Warning[205]: Found directive in column 1. (ORG)
+0400                  00907 ORG 0x400
+0400                  00908 TABLA
+Warning[203]: Found opcode in column 1. (movwf)
+0400   0082           00909 movwf PCL
+0401                  00910 MENSAJEBIENV
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (retlw)
+0401   3450           00911 retlw 'P'
+Warning[203]: Found opcode in column 1. (retlw)
+0402   3452           00912 retlw 'R'
+Warning[203]: Found opcode in column 1. (retlw)
+0403   344F           00913 retlw 'O'
+Warning[203]: Found opcode in column 1. (retlw)
+0404   3459           00914 retlw 'Y'
+Warning[203]: Found opcode in column 1. (retlw)
+0405   3445           00915 retlw 'E'
+Warning[203]: Found opcode in column 1. (retlw)
+0406   3443           00916 retlw 'C'
+Warning[203]: Found opcode in column 1. (retlw)
+0407   3454           00917 retlw 'T'
+Warning[203]: Found opcode in column 1. (retlw)
+0408   344F           00918 retlw 'O'
+Warning[203]: Found opcode in column 1. (retlw)
+0409   3400           00919 retlw .0
+040A                  00920 MENSAJEBIENV2
+Warning[203]: Found opcode in column 1. (retlw)
+040A   3446           00921 retlw 'F'
+Warning[203]: Found opcode in column 1. (retlw)
+040B   3449           00922 retlw 'I'
+Warning[203]: Found opcode in column 1. (retlw)
+040C   344E           00923 retlw 'N'
+Warning[203]: Found opcode in column 1. (retlw)
+040D   3441           00924 retlw 'A'
+Warning[203]: Found opcode in column 1. (retlw)
+040E   344C           00925 retlw 'L'
+Warning[203]: Found opcode in column 1. (retlw)
+040F   3400           00926 retlw .0
+                      00927 
+0410                  00928 MENU1
+Warning[203]: Found opcode in column 1. (retlw)
+0410   3420           00929 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0411   3442           00930 retlw 'B'
+Warning[203]: Found opcode in column 1. (retlw)
+0412   3474           00931 retlw 't'
+Warning[203]: Found opcode in column 1. (retlw)
+0413   346E           00932 retlw 'n'
+Warning[203]: Found opcode in column 1. (retlw)
+0414   3420           00933 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0415   3431           00934 retlw '1'
+Warning[203]: Found opcode in column 1. (retlw)
+0416   3420           00935 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0417   3420           00936 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0418   3443           00937 retlw 'C'
+Warning[203]: Found opcode in column 1. (retlw)
+0419   3431           00938 retlw '1'
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (retlw)
+041A   3400           00939 retlw .0
+041B                  00940 MENU2
+Warning[203]: Found opcode in column 1. (retlw)
+041B   3420           00941 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+041C   3442           00942 retlw 'B'
+Warning[203]: Found opcode in column 1. (retlw)
+041D   3474           00943 retlw 't'
+Warning[203]: Found opcode in column 1. (retlw)
+041E   346E           00944 retlw 'n'
+Warning[203]: Found opcode in column 1. (retlw)
+041F   3420           00945 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0420   3432           00946 retlw '2'
+Warning[203]: Found opcode in column 1. (retlw)
+0421   3420           00947 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0422   3420           00948 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0423   3443           00949 retlw 'C'
+Warning[203]: Found opcode in column 1. (retlw)
+0424   3432           00950 retlw '2'
+Warning[203]: Found opcode in column 1. (retlw)
+0425   3400           00951 retlw .0
+                      00952 
+0426                  00953 MENU3
+Warning[203]: Found opcode in column 1. (retlw)
+0426   3420           00954 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0427   3442           00955 retlw 'B'
+Warning[203]: Found opcode in column 1. (retlw)
+0428   3474           00956 retlw 't'
+Warning[203]: Found opcode in column 1. (retlw)
+0429   346E           00957 retlw 'n'
+Warning[203]: Found opcode in column 1. (retlw)
+042A   3420           00958 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+042B   3433           00959 retlw '3'
+Warning[203]: Found opcode in column 1. (retlw)
+042C   3420           00960 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+042D   3420           00961 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+042E   3443           00962 retlw 'C'
+Warning[203]: Found opcode in column 1. (retlw)
+042F   3433           00963 retlw '3'
+Warning[203]: Found opcode in column 1. (retlw)
+0430   3400           00964 retlw .0
+                      00965 
+0431                  00966 MENU4
+Warning[203]: Found opcode in column 1. (retlw)
+0431   3420           00967 retlw ' '
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (retlw)
+0432   3442           00968 retlw 'B'
+Warning[203]: Found opcode in column 1. (retlw)
+0433   3474           00969 retlw 't'
+Warning[203]: Found opcode in column 1. (retlw)
+0434   346E           00970 retlw 'n'
+Warning[203]: Found opcode in column 1. (retlw)
+0435   3420           00971 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0436   3434           00972 retlw '4'
+Warning[203]: Found opcode in column 1. (retlw)
+0437   3420           00973 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0438   3420           00974 retlw ' '
+Warning[203]: Found opcode in column 1. (retlw)
+0439   3443           00975 retlw 'C'
+Warning[203]: Found opcode in column 1. (retlw)
+043A   3434           00976 retlw '4'
+Warning[203]: Found opcode in column 1. (retlw)
+043B   3400           00977 retlw .0
+Warning[205]: Found directive in column 1. (END)
+                      00978 END ;directive 'end of program'
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 34
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ACTIVOCAN1                        00000076
+ACTIVOCAN2                        00000080
+ACTIVOCAN3                        0000008A
+ACTIVOCAN4                        00000094
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ASCII_H                           0000002B
+ASCII_L                           0000002D
+ASCII_M                           0000002C
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+Bank0                             
+Bank1                             
+Bank2                             
+Bank3                             
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CANAL1LIMPIO                      000000C4
+CANAL2LIMPIO                      000000CF
+CANAL3LIMPIO                      000000DA
+CANAL4LIMPIO                      000000E5
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 35
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CIS                               00000003
+CKE                               00000006
+CKP                               00000004
+CLEAR_LCD                         00000260
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000009C
+CMIE                              00000006
+CMIF                              00000006
+COLUMNA                           00000031
+COMMAND_DOUBLE                    000001F7
+CONTEO_RETARDO                    00000024
+CONVERTIR                         000000BA
+CREN                              00000004
+CSRC                              00000007
+CUENTA_1                          00000027
+CUENTA_2                          00000028
+CUENTA_3                          00000029
+CURSOR_INIT                       00000264
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+Centenas                          00000184
+Conteo                            00000023
+ConteoRetardo                     00000022
+Cursor_Linea_1                    00000268
+Cursor_Linea_2                    0000026B
+D                                 00000005
+DATALCD                           00000218
+DATA_8                            00000025
+DATA_ADDRESS                      00000005
+DATO_RX                           00000038
+DC                                00000001
+D_A                               00000005
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 36
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+D_NOT_A                           00000005
+Decenas                           0000018B
+E                                 PORTC, 5
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+Envia_Dato                        000001EF
+F                                 00000001
+FERR                              00000002
+FINAL                             0000026E
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+HEXADECIMAL                       0000002E
+Hex_Asci                          00000036
+Hex_Ascii                         00000180
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INICIO                            00000013
+INIT_LCD                          000001D2
+INIT_PORTS                        000001BF
+INIT_RS232                        0000019A
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+KEY                               00000030
+LEER_CANAL_0                      0000009E
+LEER_CANAL_1                      000000A5
+LEER_CANAL_2                      000000AC
+LEER_CANAL_3                      000000B3
+LOOP                              00000014
+LOOP_AD                           000000C0
+Loop_Externo                      0000024B
+Loop_Externo2                     00000254
+Loop_Externo_1                    00000256
+Loop_Interno                      0000024D
+Loop_Interno_1                    00000258
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 37
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MENSAJEBIENV                      00000401
+MENSAJEBIENV2                     0000040A
+MENU1                             00000410
+MENU2                             0000041B
+MENU3                             00000426
+MENU4                             00000431
+MOSTRAR                           00000100
+MOSTRAR1                          00000120
+MOSTRAR2                          00000140
+MOSTRAR3                          00000160
+MOVE_CURSOR                       00000026
+Main_Message                      0000001B
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 38
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RS                                PORTC, 3
+RSEN                              00000001
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 39
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RW                                PORTC, 4
+RX9                               00000006
+RX9D                              00000000
+RX_Interrupcion                   000001A9
+R_NOT_W                           00000002
+R_W                               00000002
+RetardoMicros                     00000246
+Retardo_1Decima                   00000253
+Retardo_1s                        00000244
+Retardo_200micros                 0000023B
+Retardo_20micros                  0000023E
+Retardo_20ms                      00000240
+Retardo_5ms                       00000242
+Retardos_ms                       0000024A
+S                                 00000003
+SEN                               00000000
+SET_MESSAGE                       0000026E
+SMP                               00000007
+SOLTAR_TECLA                      0000004F
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TABLA                             00000400
+TECLADO                           00000039
+TECLAS                            0000003D
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 40
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TEMP                              0000002F
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRANSMITIR                        00000196
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 41
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+Unidades                          00000192
+VACIO                             000000F0
+VALUE_ADC                         00000035
+VAR                               0000002A
+VAR_AUX                           00000033
+VAR_PORTC                         00000032
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+MPASM  5.47                 PRACTICAFINAL.ASM   12-6-2018  13:09:35         PAGE 42
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+__DEBUG                           1
+canales                           00000037
+main                              00000010
+micros_Loop                       00000247
+rx_dato                           00000034
+status_temp                       00000021
+w_temp                            00000020
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX--XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXX-------
+0400 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXX----
+
+All other memory blocks unused.
+
+Program Memory Words Used:   691
+Program Memory Words Free:  7501
+
+
+Errors   :     0
+Warnings :   711 reported,     0 suppressed
+Messages :    12 reported,     0 suppressed
+
+
